@@ -1,0 +1,33 @@
+# ═══════════════════════════════════════════════════════
+# Cloudflare Worker Konfiguration – RAG Chatbot
+# ═══════════════════════════════════════════════════════
+# Deployment:
+#   1. wrangler login
+#   2. wrangler secret put ANTHROPIC_API_KEY
+#   3. wrangler secret put SUPABASE_SERVICE_KEY
+#   4. wrangler secret put OPENAI_API_KEY
+#   5. wrangler deploy
+# ═══════════════════════════════════════════════════════
+
+name = "chatbot-worker"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Öffentliche Variablen (keine Secrets!)
+SUPABASE_URL = "https://msqlexexbnqctmdxjqhq.supabase.co"
+
+# Secrets werden NICHT hier gespeichert – nutze:
+#   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put SUPABASE_SERVICE_KEY
+#   wrangler secret put OPENAI_API_KEY
+
+# Optional: Custom Domain
+# routes = [
+#   { pattern = "chatbot.deine-domain.de", custom_domain = true }
+# ]
+
+# Optional: Rate Limiting (erfordert Cloudflare Workers Paid Plan)
+# [limits]
+# cpu_ms = 50
