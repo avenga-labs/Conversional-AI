@@ -114,7 +114,11 @@ export default {
                 return jsonError('Leere Nachricht.', 400, cors);
             }
 
-            /* ── 2. Embedding der User-Frage ───────────────────── */
+            /* ── 2. RAG DEAKTIVIERT - Direkt zu Claude ─────────── */
+            // RAG-System temporär deaktiviert (OpenAI Quota überschritten)
+            // Um RAG zu aktivieren: OpenAI-Guthaben aufladen und diese Zeilen auskommentieren
+
+            /*
             const embRes = await fetchWithTimeout('https://api.openai.com/v1/embeddings', {
                 method: 'POST',
                 headers: {
@@ -134,7 +138,6 @@ export default {
             const embData = await embRes.json();
             const queryEmbedding = embData.data[0].embedding;
 
-            /* ── 3. Supabase: Ähnliche Dokumente finden ────────── */
             const matchRes = await fetchWithTimeout(
                 `${env.SUPABASE_URL}/rest/v1/rpc/match_documents`,
                 {
@@ -155,6 +158,11 @@ export default {
             const docs = matchRes.ok ? await matchRes.json() : [];
             const context = docs.map(d => d.content).join('\n\n---\n\n');
             const sources = docs.map(d => d.metadata);
+            */
+
+            // RAG deaktiviert - kein Kontext
+            const context = '';
+            const sources = [];
 
             /* ── 4. Claude aufrufen ─────────────────────────────── */
             const claudeRes = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
