@@ -326,33 +326,65 @@ function loadChatHistory() {
             return;
         }
 
-        // Render komplette Chat-Messages in der Sidebar
+        // Kompakte Chat-Liste (ChatGPT-Style)
         chatHistory.innerHTML = entries.map(session => {
-            const messagesHtml = session.messages?.map(msg => {
-                const isUser = msg.role === 'user';
-                const content = typeof msg.content === 'string'
-                    ? msg.content.slice(0, 100)
-                    : 'Chat-Nachricht';
-
-                return `
-                    <div class="history-message ${isUser ? 'user' : 'assistant'}">
-                        <div class="message-role">${isUser ? 'Du' : 'AIvenga'}</div>
-                        <div class="message-preview">${escHtml(content)}${content.length > 100 ? '...' : ''}</div>
-                    </div>
-                `;
-            }).join('') || '';
-
+            const isActive = session.id === currentSessionId;
             return `
-                <div class="history-session" data-session-id="${session.id}">
-                    <div class="session-header">
-                        <div class="session-title">${escHtml(session.title)}</div>
-                        <div class="session-time">${formatTime(session.ts)}</div>
+                <div class="history-item ${isActive ? 'active' : ''}" data-session-id="${session.id}">
+                    <div class="chat-icon">💬</div>
+                    <div class="chat-info">
+                        <div class="chat-title">${escHtml(session.title)}</div>
+                        <div class="chat-time">${formatTime(session.ts)}</div>
                     </div>
-                    <div class="session-messages">${messagesHtml}</div>
                 </div>
             `;
         }).join('');
+
+        // Click-Handler für Chat-Laden
+        document.querySelectorAll('.history-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const sessionId = parseInt(item.dataset.sessionId);
+                loadChatSession(sessionId);
+            });
+        });
     } catch { /* ignore */ }
+}
+
+function loadChatSession(sessionId) {
+    try {
+        const entries = JSON.parse(localStorage.getItem('chatSessions') || '[]');
+        const session = entries.find(e => e.id === sessionId);
+
+        if (!session) return;
+
+        // Session laden
+        currentSessionId = sessionId;
+        conversationHistory = session.messages || [];
+
+        // Chat-UI leeren und Messages rendern
+        messagesEl.innerHTML = '';
+
+        conversationHistory.forEach(msg => {
+            if (msg.role === 'user') {
+                appendMessage('user', [{ type: 'text', content: msg.content }]);
+            } else {
+                // Assistant messages sind schon in Blocks-Format
+                const blocks = Array.isArray(msg.content) ? msg.content : [{ type: 'text', content: msg.content }];
+                appendMessage('assistant', blocks);
+            }
+        });
+
+        // History neu laden um aktiven Chat zu highlighten
+        loadChatHistory();
+
+        // Input-Area sichtbar machen
+        const inputArea = document.getElementById('input-area');
+        if (inputArea) {
+            inputArea.classList.remove('hidden');
+        }
+    } catch (e) {
+        console.error('Failed to load chat session:', e);
+    }
 }
 
 function formatTime(timestamp) {
