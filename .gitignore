@@ -1,0 +1,25 @@
+# Lokale Claude Code Einstellungen
+.claude/settings.local.json
+
+# Embedded Git Repositories (nicht als Submodules)
+.agents/skills/superpowers/
+Avenga-Labs/
+Conversional AI/
+
+# Windows
+nul
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
