@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "mcp__figma__generate_figma_design",
+      "mcp__figma__get_design_context",
+      "Bash(start \"http://127.0.0.1:5500/index.html#figmacapture=2b2046e4-1fb2-4160-8aa5-829202e91a86&figmaendpoint=https%3A%2F%2Fmcp.figma.com%2Fmcp%2Fcapture%2F2b2046e4-1fb2-4160-8aa5-829202e91a86%2Fsubmit&figmadelay=1000\")",
+      "Bash(dir \"C:\\Users\\mieba\\Documents\\Avenga Experience\\Conversional AI\")",
+      "Bash(git add rag-chatbot)",
+      "Bash(git commit -m \"Add RAG Chatbot with Avenga Design\n\n- Custom Avenga brand design with Haffer & Reckless fonts\n- Cloudflare Worker backend with Claude AI\n- Supabase vector database integration\n- Production-ready deployment configuration\")",
+      "Bash(npx wrangler deploy)",
+      "Bash(git push origin main)",
+      "Bash(git add .)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nDisable RAG - Simplify to Claude-only Chatbot\n\nProblem: Embedding APIs (HuggingFace, Supabase AI) unstable/deprecated\nSolution: Disable RAG completely, direct Claude integration\n\nChanges:\n- Remove all embedding logic (HuggingFace, OpenAI, Supabase)\n- Chatbot now works directly with Claude Sonnet 4\n- Simplified system prompt (no context injection)\n- Clean, stable, production-ready\n\nRAG can be re-enabled later with stable solution (e.g. OpenAI embeddings)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd AIvenga Financial Expert System Prompt\n\nTransform chatbot into AIvenga - a certified financial expert for:\n- Banking & Neo-Banking (interest rates, payment services)\n- Trading & Investment (ETFs, stocks, crypto, market trends)\n- Insurance (retirement planning, life insurance, risk coverage)\n\nFeatures:\n- Expert knowledge with simple, relatable explanations\n- Uses everyday comparisons for complex financial concepts\n- Includes proper disclaimers (no financial advice)\n- Interactive elements (tables, cards, button groups)\n- Conversational and trustworthy tone\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git rm --cached .agents/skills/superpowers Avenga-Labs \"Conversional AI\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nFix GitHub Pages Build - Remove Git Submodules\n\nProblem: GitHub Pages build failed due to broken submodules\n- .agents/skills/superpowers\n- Avenga-Labs\n- Conversional AI\n\nSolution: Remove submodule references from git index\nThis fixes the build pipeline and allows GitHub Pages to deploy correctly.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(cat .git/config)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nUI/UX Improvements: Remove Burger Menu, Enhanced Chat History\n\nChanges:\n1. System Prompt: Minimize emoji usage (only for graphs, warnings)\n2. Remove burger menu from header (no longer needed)\n3. Remove simple history list in sidebar\n4. New: Full chat history per session in sidebar\n   - Shows complete message flow per chat\n   - User/AIvenga role indicators\n   - Message previews (100 chars)\n   - Timestamps (relative time)\n   - All stored locally (localStorage)\n\nUX Improvements:\n- Cleaner header (removed toggle button)\n- Better overview of past conversations\n- No server-side storage needed\n- Session-based chat tracking\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ]
+  }
+}
