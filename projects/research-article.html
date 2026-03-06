@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The AI Inflection Point — Business Research 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,200;1,9..144,400;1,9..144,700&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0C0B09;
+      --bg-alt:       #131210;
+      --surface:      #1C1A17;
+      --border:       #272420;
+      --text:         #EAE5DC;
+      --text-muted:   #6E6860;
+      --text-sub:     #9D9489;
+      --accent:       #E8521A;
+      --accent-dim:   rgba(232, 82, 26, 0.10);
+      --accent-line:  rgba(232, 82, 26, 0.28);
+      --mint:         #7EFFC1;
+      --amber:        #F5D97C;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Sora', system-ui, sans-serif;
+      --font-mono:    'DM Mono', monospace;
+      --col-content:  720px;
+      --col-wide:     1080px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.78;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--accent); color: var(--bg); }
+
+    /* ── PROGRESS BAR ── */
+    #progress {
+      position: fixed; top: 0; left: 0;
+      height: 2px; width: 0%;
+      background: var(--accent);
+      z-index: 200;
+      transition: width 0.08s linear;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 64px);
+      border-bottom: 1px solid transparent;
+      transition: background 0.35s, border-color 0.35s;
+    }
+    nav.stuck {
+      background: rgba(12, 11, 9, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom-color: var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-logo em { color: var(--accent); font-style: normal; }
+    .nav-logo:hover { color: var(--text); }
+
+    .nav-right {
+      display: flex; align-items: center; gap: 22px;
+      list-style: none;
+    }
+    .nav-right li a {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-right li a:hover { color: var(--text); }
+    .nav-pill a {
+      border: 1px solid var(--accent-line) !important;
+      padding: 5px 14px !important;
+      border-radius: 2px;
+      color: var(--accent) !important;
+      transition: background 0.2s, color 0.2s !important;
+    }
+    .nav-pill a:hover { background: var(--accent) !important; color: var(--bg) !important; }
+
+    @media (max-width: 576px) {
+      .nav-right .hide-sm { display: none; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100svh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 100px clamp(20px, 6vw, 80px) clamp(56px, 8vw, 96px);
+      position: relative; overflow: hidden;
+    }
+
+    /* grain overlay */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4t5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwMA7QiYAxi+IlPdqo+hYHnUt5ZPfnsHJyNiDtnpJyayNBkF6cWoYGAMY92ZBKLseWtnohBfeiHKFtKARC2D7L8mYRnfUfkpM4M8MFSoYXBs/eBi+4/XoHhkQP/e1gZj+ygAAAABJRU5ErkJggg==");
+      opacity: 0.025; pointer-events: none; z-index: 1;
+    }
+
+    /* gradient wash */
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 75% 55% at 15% 85%, rgba(232,82,26,0.07) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 85% 15%, rgba(126,255,193,0.03) 0%, transparent 60%);
+      pointer-events: none; z-index: 1;
+    }
+
+    .hero-year {
+      position: absolute;
+      right: -1vw; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-display);
+      font-size: clamp(180px, 28vw, 400px);
+      font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.035);
+      line-height: 1;
+      user-select: none; pointer-events: none;
+      z-index: 0; letter-spacing: -0.05em;
+    }
+
+    .hero-inner {
+      position: relative; z-index: 2;
+      max-width: var(--col-wide);
+    }
+
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: clamp(24px, 4vw, 44px);
+      opacity: 0; transform: translateY(14px);
+      animation: fadeUp 0.65s ease forwards 0.25s;
+    }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 9px; letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-line);
+      padding: 4px 11px; border-radius: 2px;
+    }
+
+    .hero-date {
+      font-family: var(--font-mono);
+      font-size: 9px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+
+    .hero-h1 {
+      font-family: var(--font-display);
+      font-size: clamp(54px, 9.5vw, 136px);
+      font-weight: 900;
+      line-height: 0.93;
+      letter-spacing: -0.035em;
+      color: var(--text);
+      margin-bottom: clamp(20px, 3vw, 32px);
+    }
+
+    .hero-h1 .line { display: block; overflow: hidden; }
+
+    .hero-h1 .line span {
+      display: inline-block;
+      opacity: 0; transform: translateY(105%);
+      animation: slideUp 0.75s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    .hero-h1 .italic-line {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .hero-sub {
+      font-family: var(--font-display);
+      font-style: italic; font-weight: 300;
+      font-size: clamp(17px, 2vw, 26px);
+      line-height: 1.42;
+      color: var(--text-sub);
+      max-width: 600px;
+      margin-bottom: clamp(28px, 5vw, 56px);
+      opacity: 0;
+      animation: fadeUp 0.65s ease forwards 0.95s;
+    }
+
+    .hero-meta {
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.65s ease forwards 1.15s;
+    }
+
+    .author-chip {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .author-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 9px; color: var(--accent);
+    }
+    .author-name {
+      font-size: 12px; font-weight: 500; color: var(--text);
+      display: block;
+    }
+    .author-role {
+      font-family: var(--font-mono); font-size: 9px;
+      color: var(--text-muted); display: block; letter-spacing: 0.06em;
+    }
+
+    .meta-divider {
+      width: 1px; height: 22px; background: var(--border);
+    }
+
+    .meta-pill {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 0.1em; color: var(--text-muted);
+    }
+    .meta-pill strong { color: var(--text-sub); font-weight: 500; }
+
+    @media (max-width: 480px) { .meta-divider, .meta-pill { display: none; } }
+
+    /* ── ARTICLE BODY ── */
+    .article {
+      max-width: var(--col-content);
+      margin: 0 auto;
+      padding: clamp(56px, 10vw, 112px) clamp(20px, 5vw, 40px);
+    }
+
+    .lead {
+      font-size: clamp(18px, 2.1vw, 22px);
+      line-height: 1.65; font-weight: 300;
+      color: var(--text); margin-bottom: 2.4em;
+    }
+
+    .lead::first-letter {
+      font-family: var(--font-display);
+      font-size: 5em; font-weight: 900; line-height: 0.78;
+      float: left; margin: 0.04em 0.1em 0 0;
+      color: var(--accent);
+    }
+
+    .article p { margin-bottom: 1.65em; color: var(--text); }
+
+    .article strong { color: var(--text); font-weight: 500; }
+
+    /* ── SECTION HEADERS ── */
+    .sec {
+      margin-top: clamp(52px, 9vw, 96px);
+      padding-top: clamp(28px, 5vw, 52px);
+      border-top: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .sec-num {
+      font-family: var(--font-mono);
+      font-size: 9px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 12px; display: block;
+    }
+
+    .sec-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4.5vw, 52px);
+      font-weight: 900; line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--text); margin-bottom: 1em;
+    }
+
+    /* ── STAT GRID ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: 3px;
+      overflow: hidden;
+      margin: clamp(28px, 5vw, 52px) 0;
+    }
+
+    @media (max-width: 540px) { .stat-grid { grid-template-columns: 1fr; } }
+
+    .sg-cell {
+      background: var(--bg-alt);
+      padding: clamp(18px, 3vw, 30px);
+    }
+
+    .sg-value {
+      font-family: var(--font-display);
+      font-size: clamp(38px, 5.5vw, 60px);
+      font-weight: 900; letter-spacing: -0.04em;
+      line-height: 1; margin-bottom: 6px;
+    }
+    .sg-cell:nth-child(1) .sg-value { color: var(--accent); }
+    .sg-cell:nth-child(2) .sg-value { color: var(--mint); }
+    .sg-cell:nth-child(3) .sg-value { color: var(--amber); }
+
+    .sg-desc {
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--text-muted); line-height: 1.45;
+    }
+
+    /* ── STAT CALLOUT ── */
+    .stat-callout {
+      margin: clamp(32px, 5vw, 56px) 0;
+      padding: clamp(22px, 4vw, 38px) clamp(20px, 4vw, 36px);
+      background: var(--bg-alt);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .sc-number {
+      font-family: var(--font-display);
+      font-size: clamp(60px, 9vw, 100px);
+      font-weight: 900; color: var(--accent);
+      line-height: 0.88; letter-spacing: -0.045em;
+      margin-bottom: 14px;
+    }
+
+    .sc-label {
+      font-size: 14px; color: var(--text-sub); line-height: 1.55; max-width: 400px;
+    }
+
+    .sc-source {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--text-muted); margin-top: 14px; letter-spacing: 0.05em;
+    }
+
+    /* ── PULL QUOTE ── */
+    .pull {
+      margin: clamp(36px, 6vw, 72px) clamp(-16px, -3vw, -48px);
+      padding: clamp(24px, 4vw, 44px) clamp(20px, 4vw, 48px);
+      border-top: 2px solid var(--text);
+      border-bottom: 2px solid var(--text);
+    }
+
+    @media (max-width: 768px) { .pull { margin-left: 0; margin-right: 0; } }
+
+    .pull p {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.8vw, 32px);
+      font-style: italic; font-weight: 300;
+      line-height: 1.38; color: var(--text);
+      margin: 0 !important;
+    }
+
+    .pull cite {
+      display: block;
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted); margin-top: 16px; font-style: normal;
+    }
+
+    /* ── ANALYST ROWS ── */
+    .analysts { margin: clamp(22px, 4vw, 44px) 0; }
+
+    .analyst {
+      padding: clamp(18px, 3vw, 30px) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .analyst:first-child { border-top: 1px solid var(--border); }
+
+    .analyst-firm {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 8px;
+    }
+
+    .analyst-quote {
+      font-family: var(--font-display);
+      font-size: clamp(15px, 1.9vw, 19px);
+      font-style: italic; color: var(--text-sub); line-height: 1.42;
+    }
+
+    /* ── USE CASE LIST ── */
+    .use-cases {
+      display: grid; gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border); border-radius: 3px;
+      overflow: hidden;
+      margin: clamp(22px, 4vw, 44px) 0;
+    }
+
+    .uc {
+      background: var(--bg-alt);
+      padding: clamp(18px, 3vw, 28px) clamp(18px, 3vw, 28px);
+      display: grid; grid-template-columns: 28px 1fr; gap: 18px;
+      align-items: start;
+      transition: background 0.18s;
+      cursor: default;
+    }
+    .uc:hover { background: var(--surface); }
+
+    .uc-num {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--accent); padding-top: 2px; letter-spacing: 0.06em;
+    }
+
+    .uc-title {
+      font-family: var(--font-display);
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 600; color: var(--text); margin-bottom: 5px;
+    }
+
+    .uc-desc {
+      font-size: 13px; color: var(--text-muted); line-height: 1.6;
+      margin: 0 !important;
+    }
+
+    /* ── FOOTNOTE REFS ── */
+    sup.r {
+      font-family: var(--font-mono); font-size: 9px;
+      color: var(--accent); margin-left: 1px; vertical-align: super;
+    }
+    sup.r a {
+      color: inherit; text-decoration: none;
+    }
+    sup.r a:hover { opacity: 0.6; }
+
+    /* ── SOURCES ── */
+    .sources {
+      margin-top: clamp(56px, 10vw, 112px);
+      padding-top: clamp(28px, 5vw, 52px);
+      border-top: 1px solid var(--border);
+    }
+
+    .sources-label {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 28px; display: block;
+    }
+
+    .sources ol {
+      list-style: none;
+      counter-reset: src;
+    }
+
+    .sources ol li {
+      counter-increment: src;
+      display: flex; gap: 16px;
+      margin-bottom: 14px;
+      font-size: 12px; line-height: 1.6; color: var(--text-muted);
+    }
+
+    .sources ol li::before {
+      content: counter(src);
+      font-family: var(--font-mono); font-size: 9px;
+      color: var(--accent); padding-top: 3px;
+      min-width: 14px; flex-shrink: 0;
+    }
+
+    .sources ol li em { font-style: italic; color: var(--text-sub); }
+
+    .sources ol li a {
+      color: var(--text-muted);
+      text-decoration: underline; text-underline-offset: 3px;
+      text-decoration-color: var(--border);
+      transition: color 0.2s, text-decoration-color 0.2s;
+    }
+    .sources ol li a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: clamp(48px, 8vw, 80px);
+      padding: clamp(28px, 5vw, 52px) clamp(20px, 6vw, 64px);
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+
+    .footer-brand {
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .footer-brand em { color: var(--accent); font-style: normal; }
+
+    .footer-note {
+      font-size: 11px; color: var(--text-muted);
+      text-align: right; line-height: 1.5;
+    }
+
+    /* ── SCROLL REVEALS ── */
+    .rv {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .rv.in { opacity: 1; transform: translateY(0); }
+
+    /* ── KEYFRAMES ── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Forward<em>/</em>Research</a>
+  <ul class="nav-right">
+    <li class="hide-sm"><a href="#section-5">Use Cases</a></li>
+    <li class="hide-sm"><a href="#sources">Sources</a></li>
+    <li class="nav-pill"><a href="#">Download</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-year" aria-hidden="true">2026</div>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <span class="tag">Business Research</span>
+      <span class="hero-date">March 2, 2026</span>
+    </div>
+
+    <h1 class="hero-h1">
+      <span class="line"><span style="animation-delay:0.38s">The AI</span></span>
+      <span class="line italic-line"><span style="animation-delay:0.52s">Inflection</span></span>
+      <span class="line"><span style="animation-delay:0.66s">Point</span></span>
+    </h1>
+
+    <p class="hero-sub">
+      Why 2026 Is the Year Experimentation Must Give Way to Impact
+    </p>
+
+    <div class="hero-meta">
+      <div class="author-chip">
+        <div class="author-avatar">ZR</div>
+        <div>
+          <span class="author-name">Zapier Research</span>
+          <span class="author-role">Business Intelligence Unit</span>
+        </div>
+      </div>
+      <div class="meta-divider"></div>
+      <div class="meta-pill"><strong>14 min</strong>&nbsp; read</div>
+      <div class="meta-pill"><strong>7</strong>&nbsp; sources</div>
+      <div class="meta-pill"><strong>6</strong>&nbsp; use cases</div>
+    </div>
+  </div>
+</header>
+
+<!-- ARTICLE -->
+<article class="article">
+
+  <p class="lead">
+    The numbers tell a quietly devastating story. Eighty-eight percent of the world's organisations now deploy artificial intelligence in at least one function. Yet only nineteen percent report revenue increases exceeding five percent as a result.<sup class="r"><a href="#fn1">1</a></sup> In the widening space between those two figures lives the central paradox of 2026: a technology that has achieved near-universal adoption while remaining, for most, commercially elusive.
+  </p>
+
+  <p class="rv">
+    This is not a story of failure. It is a story of transition — one that every executive, digital strategist, and technology leader must now understand. The organisations that learned to experiment have built real capability. The challenge is converting that capability into compounding competitive advantage before the window closes.
+  </p>
+
+  <p class="rv">
+    Three forces are converging to make 2026 a year unlike those before it. Artificial intelligence has matured from a strategic initiative into an operational necessity. Geopolitical fragmentation is forcing a fundamental rethinking of global supply chains built over decades of relative stability. And a bifurcating consumer landscape is demanding that companies develop not one market strategy, but two simultaneously.
+  </p>
+
+  <!-- SECTION 1 -->
+  <div class="sec rv" id="section-1">
+    <span class="sec-num">01 — The Adoption Gap</span>
+    <h2 class="sec-title">Between Ambition and Outcome</h2>
+  </div>
+
+  <p class="rv">
+    When we survey the AI landscape today, the headline adoption figures are striking. Yet the more instructive number is the one buried beneath them: the stark divergence between those who deploy AI and those who profit from it. Early adopters are growing revenue at <strong>1.7 times the rate</strong> of those who have fallen behind.<sup class="r"><a href="#fn1">1</a></sup> That gap is not static — it widens with every passing quarter.
+  </p>
+
+  <div class="stat-grid rv">
+    <div class="sg-cell">
+      <div class="sg-value" data-count="88" data-suffix="%">88%</div>
+      <div class="sg-desc">of organisations deploy AI in at least one function</div>
+    </div>
+    <div class="sg-cell">
+      <div class="sg-value" data-count="19" data-suffix="%">19%</div>
+      <div class="sg-desc">report revenue increases exceeding 5%</div>
+    </div>
+    <div class="sg-cell">
+      <div class="sg-value" data-count="1.7" data-suffix="×">1.7×</div>
+      <div class="sg-desc">higher revenue growth among early AI adopters</div>
+    </div>
+  </div>
+
+  <p class="rv">
+    The explanation for this paradox lies not in the technology itself, but in how organisations have chosen to deploy it. The predominant pattern across industries has been automation of existing processes — layering machine intelligence atop workflows designed for an older era. Deloitte's 2026 Tech Trends report identifies this as the defining failure mode: <strong>organisations automating broken processes see minimal returns</strong>.<sup class="r"><a href="#fn4">4</a></sup>
+  </p>
+
+  <div class="pull rv">
+    <p>"The gap between adoption and value realisation is not a technology problem. It is a process design problem wearing a technology mask."</p>
+    <cite>— Deloitte Insights, Tech Trends 2026 <sup class="r"><a href="#fn4">4</a></sup></cite>
+  </div>
+
+  <p class="rv">
+    Gartner projects that <strong>40 percent of agentic AI projects will fail by 2027</strong> — not from technological shortcomings, but from precisely this failure to redesign the underlying work before automating it.<sup class="r"><a href="#fn5">5</a></sup> Success requires simultaneous process redesign and technology implementation. This dual capability is what most organisations lack internally, and where the case for external expertise becomes structurally compelling.
+  </p>
+
+  <!-- SECTION 2 -->
+  <div class="sec rv" id="section-2">
+    <span class="sec-num">02 — Geopolitics</span>
+    <h2 class="sec-title">Fractures in the Global Order</h2>
+  </div>
+
+  <p class="rv">
+    If the AI adoption gap represents the internal challenge facing organisations in 2026, the external environment presents an equally urgent reckoning. Geopolitical fragmentation — long anticipated but slower to materialise than forecast — has reached its own inflection point.
+  </p>
+
+  <p class="rv">
+    Trade protectionism and tariff escalation are forcing companies to rethink supply chains constructed across decades of globalisation. Pre-tariff inventory buffers, accumulated in anticipation of these shifts, are now depleting. The full impact is beginning to transmit through supply chains with a lag that will accelerate through the year. Seventy-two percent of senior leaders surveyed by McKinsey report direct geopolitical impact on their operations — yet only <strong>26 percent</strong> engage in quarterly scenario planning.<sup class="r"><a href="#fn3">3</a></sup>
+  </p>
+
+  <div class="stat-callout rv">
+    <div class="sc-number" data-count="72" data-suffix="%">72%</div>
+    <div class="sc-label">of business leaders report that geopolitical instability is directly affecting their operations — yet the majority have no formal mechanism for scenario planning.</div>
+    <div class="sc-source">McKinsey Global Institute, 2026 <sup class="r"><a href="#fn3">3</a></sup></div>
+  </div>
+
+  <p class="rv">
+    The geographic picture is uneven. Germany, exposed to intense Chinese competition in manufacturing, faces headwinds that contrast sharply with the relative resilience of southern European economies. India and Vietnam are emerging as critical manufacturing hubs as companies pursue supply chain diversification. Asia-Pacific is on track to overtake North America as the world's largest consumer market by 2035 — a fundamental shift in the gravitational centre of global commerce that demands strategic repositioning now, not at the decade's end.
+  </p>
+
+  <p class="rv">
+    China's response to these dynamics is instructive. Rather than retreating under pressure, Beijing has doubled down on high-tech exports — electric vehicles, industrial robotics, advanced semiconductors — intensifying global price competition in precisely the sectors where Western companies had assumed safety. For corporate strategists, the implication is clear: supply chain resilience is no longer a logistics challenge. It is a geopolitical competence.
+  </p>
+
+  <!-- SECTION 3 -->
+  <div class="sec rv" id="section-3">
+    <span class="sec-num">03 — Consumer Dynamics</span>
+    <h2 class="sec-title">The Bifurcated Consumer</h2>
+  </div>
+
+  <p class="rv">
+    The third convergent force reshaping 2026 operates at the level of the individual. Consumer affordability challenges — driven by sustained inflation, rising debt service costs, and wage growth that has lagged price increases across many markets — are splitting demand into two distinct segments that require fundamentally different responses.
+  </p>
+
+  <p class="rv">
+    Premium consumers continue to spend with confidence, prioritising quality, personalisation, and exclusivity. Value consumers are scrutinising every purchase, gravitating toward efficiency and affordability with a rigour not seen since the post-2008 contraction. The companies caught between these segments — those that built businesses on a unified middle market — face the hardest strategic road. The response requires not one adjusted approach but two simultaneously deployed ones: separate product development priorities, separate pricing architectures, and separate go-to-market strategies.
+  </p>
+
+  <p class="rv">
+    AI is the enabling technology for this dual-strategy imperative. Dynamic pricing engines, real-time personalisation, and AI-driven customer segmentation make it operationally feasible to serve both segments well. Without these capabilities, the exercise becomes prohibitively expensive in both capital and management attention.
+  </p>
+
+  <!-- SECTION 4 -->
+  <div class="sec rv" id="section-4">
+    <span class="sec-num">04 — Industry Perspectives</span>
+    <h2 class="sec-title">What the Analysts Are Seeing</h2>
+  </div>
+
+  <p class="rv">
+    The world's leading management consultancies are not passive observers of these trends. Their 2026 research agendas reveal both the convergence in their diagnosis and instructive differences in emphasis. Taken together, they constitute a remarkably consistent argument for a specific kind of organisational response.
+  </p>
+
+  <div class="analysts rv">
+    <div class="analyst">
+      <div class="analyst-firm">Accenture <sup class="r"><a href="#fn1">1</a></sup></div>
+      <div class="analyst-quote">"AI has moved from strategic initiative to operational necessity. Agentic AI is reshaping automation — organisations are moving beyond chatbots to autonomous agents managing end-to-end workflows, delivering 20–30% productivity improvements in early adopters."</div>
+    </div>
+    <div class="analyst">
+      <div class="analyst-firm">Boston Consulting Group <sup class="r"><a href="#fn2">2</a></sup></div>
+      <div class="analyst-quote">"AI reduces the cost of failure, enabling faster experimentation and higher-impact innovation. AI leaders produce 3.5 times more patents than non-adopters — a compounding advantage that will reshape competitive landscapes within the decade."</div>
+    </div>
+    <div class="analyst">
+      <div class="analyst-firm">McKinsey &amp; Company <sup class="r"><a href="#fn3">3</a></sup></div>
+      <div class="analyst-quote">"Technical transformation must be paired with organisational transformation. 86% of leaders feel unprepared for day-to-day AI operations — signalling that the human dimension of AI adoption remains the binding constraint on scaling impact."</div>
+    </div>
+    <div class="analyst">
+      <div class="analyst-firm">Deloitte Insights <sup class="r"><a href="#fn4">4</a></sup></div>
+      <div class="analyst-quote">"Token costs have dropped 280-fold in two years, yet enterprises are facing monthly bills in the tens of millions. Organisations must shift from cloud-first to strategic hybrid models — cloud for elasticity, on-premises for consistency, edge for immediacy."</div>
+    </div>
+  </div>
+
+  <p class="rv">
+    Beneath the differences in framing, a consistent argument emerges: the organisations that will define the next decade are those building not just AI capability, but AI-enabled organisational capability — the ability to redesign work, redeploy talent, and reallocate capital at machine speed. That is a broader and harder mandate than deploying a model.
+  </p>
+
+  <!-- SECTION 5 -->
+  <div class="sec rv" id="section-5">
+    <span class="sec-num">05 — Opportunities</span>
+    <h2 class="sec-title">Six Paths to Production-Scale Impact</h2>
+  </div>
+
+  <p class="rv">
+    Against this backdrop, the question for digital agencies and transformation partners is not whether to position around AI, but how to do so with the specificity and credibility that enterprise clients now demand. The following six use cases represent areas of highest near-term value — each grounded in documented enterprise need and bounded by a realistic, deliverable service offering.
+  </p>
+
+  <div class="use-cases rv">
+    <div class="uc">
+      <div class="uc-num">01</div>
+      <div>
+        <div class="uc-title">AI-Powered Supply Chain Resilience</div>
+        <p class="uc-desc">Real-time data integration, predictive analytics, and scenario planning for multinational manufacturers navigating tariff impacts and geopolitical disruption. AI agents automatically recommend sourcing alternatives and production reallocation. Target impact: 15–25% reduction in supply chain costs.</p>
+      </div>
+    </div>
+    <div class="uc">
+      <div class="uc-num">02</div>
+      <div>
+        <div class="uc-title">Agentic AI for Enterprise Operations</div>
+        <p class="uc-desc">End-to-end transformation combining process redesign, AI agent implementation, and organisational change management. The focus is business outcomes, not technology deployment — moving the 38% of companies piloting agentic AI to the 11% in production. Target impact: 20–30% productivity improvement.</p>
+      </div>
+    </div>
+    <div class="uc">
+      <div class="uc-num">03</div>
+      <div>
+        <div class="uc-title">Geopolitical Risk Intelligence</div>
+        <p class="uc-desc">AI-powered scenario planning combining real-time trade policy feeds, expert analysis, and impact modelling for companies exposed to tariff volatility and regional instability. Serving the 72% of leaders impacted but the 74% without structured scenario planning.</p>
+      </div>
+    </div>
+    <div class="uc">
+      <div class="uc-num">04</div>
+      <div>
+        <div class="uc-title">Customer Experience Personalisation at Scale</div>
+        <p class="uc-desc">Dynamic AI personalisation engines serving bifurcated markets — separate optimisation logic for premium and value segments across all customer touchpoints. Combines customer data, behavioural analytics, and real-time AI agents. Target impact: 20–30% conversion uplift, 15–25% customer lifetime value improvement.</p>
+      </div>
+    </div>
+    <div class="uc">
+      <div class="uc-num">05</div>
+      <div>
+        <div class="uc-title">AI-Native Tech Organisation Redesign</div>
+        <p class="uc-desc">Restructuring IT organisations to drive business transformation rather than service delivery — building hybrid human-AI teams, redesigning governance frameworks, and developing new talent models. Addressing the 99% of IT leaders reporting major operating model changes underway.</p>
+      </div>
+    </div>
+    <div class="uc">
+      <div class="uc-num">06</div>
+      <div>
+        <div class="uc-title">Workforce Optimisation &amp; Reskilling</div>
+        <p class="uc-desc">Integrated platforms for workforce analytics, AI-powered skills assessment, and personalised learning paths. Demand for AI fluency has grown sevenfold in two years — talent scarcity is the binding constraint on enterprise AI adoption, creating structural demand for reskilling services at scale.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCLUSION -->
+  <div class="sec rv" id="section-6">
+    <span class="sec-num">06 — Conclusion</span>
+    <h2 class="sec-title">The Window Is Narrow</h2>
+  </div>
+
+  <p class="rv">
+    The evidence from 2026 is unambiguous: the gap between AI leaders and AI laggards is compounding. Early adopters are pulling ahead in revenue growth, innovation velocity, and organisational capability. The infrastructure commitments of Amazon — $200 billion in 2026 capex, with $50 billion allocated specifically to AI infrastructure<sup class="r"><a href="#fn6">6</a></sup> — and Google, with $175–185 billion in planned capital expenditure,<sup class="r"><a href="#fn7">7</a></sup> signal that the foundational layer of enterprise AI is being locked in by a small number of hyperscalers. Organisations that delay building their own AI capabilities do so on infrastructure controlled by others.
+  </p>
+
+  <p class="rv">
+    The most dangerous position in 2026 is also the most common one: enough experimentation to feel engaged with AI, but not enough production deployment to generate compounding returns. Pilots are expensive learning exercises. Production deployments are assets. Only the latter compounds.
+  </p>
+
+  <div class="pull rv">
+    <p>"The transition from experimentation to production is not a technical challenge. It is a leadership challenge — one that requires organisations to redesign work, reallocate talent, and measure outcomes rather than activity."</p>
+    <cite>— Forward Research Analysis, March 2026</cite>
+  </div>
+
+  <p class="rv">
+    The organisations that emerge strongest from this period will be those that treat 2026 as the year the experiment ended — and the real work began. For digital agencies and transformation partners with the capability to move clients from pilots to impact, the opportunity is structural, significant, and narrowing every quarter.
+  </p>
+
+  <!-- SOURCES -->
+  <div class="sources rv" id="sources">
+    <span class="sources-label">Sources &amp; References</span>
+    <ol>
+      <li id="fn1">
+        Accenture. <em>Technology Vision 2026: AI as the Foundation of Corporate Strategy.</em>
+        Accenture Research, 2026.
+        <a href="https://www.accenture.com/us-en/insights/technology/technology-trends-2026" target="_blank" rel="noopener">accenture.com</a>
+      </li>
+      <li id="fn2">
+        Boston Consulting Group. <em>Growth Through AI-Powered Innovation: The New Innovation Imperative.</em>
+        BCG Henderson Institute, 2026.
+        <a href="https://www.bcg.com/publications/2026/growth-through-ai-powered-innovation" target="_blank" rel="noopener">bcg.com</a>
+      </li>
+      <li id="fn3">
+        McKinsey &amp; Company. <em>Superagency in the Workplace: Empowering People to Unlock AI's Full Potential.</em>
+        McKinsey Global Institute, January 2026.
+        <a href="https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/superagency-in-the-workplace" target="_blank" rel="noopener">mckinsey.com</a>
+      </li>
+      <li id="fn4">
+        Deloitte Insights. <em>Tech Trends 2026.</em>
+        Deloitte Development LLC, 2026.
+        <a href="https://www2.deloitte.com/us/en/insights/focus/tech-trends.html" target="_blank" rel="noopener">deloitte.com</a>
+      </li>
+      <li id="fn5">
+        Gartner. <em>Predicts 2027: Enterprise Agentic AI — Adoption, Failure Modes, and Infrastructure Implications.</em>
+        Gartner Research, 2026.
+        <a href="https://www.gartner.com/en/research" target="_blank" rel="noopener">gartner.com</a>
+      </li>
+      <li id="fn6">
+        Amazon.com, Inc. <em>Q4 2025 Earnings Call: 2026 Capital Expenditure Guidance and AWS AI Infrastructure Plans.</em>
+        SEC Filing &amp; Investor Relations, February 2026.
+        <a href="https://ir.aboutamazon.com" target="_blank" rel="noopener">ir.aboutamazon.com</a>
+      </li>
+      <li id="fn7">
+        Alphabet Inc. <em>Q4 2025 Earnings Call: 2026 Infrastructure Investment Plans.</em>
+        SEC Filing &amp; Investor Relations, February 2026.
+        <a href="https://abc.xyz/investor" target="_blank" rel="noopener">abc.xyz</a>
+      </li>
+    </ol>
+  </div>
+
+</article>
+
+<footer>
+  <div class="footer-brand">Forward<em>/</em>Research</div>
+  <div class="footer-note">
+    © 2026 Forward Research. All rights reserved.<br>
+    Based on Zapier Business Research, March 2, 2026.
+  </div>
+</footer>
+
+<script>
+  // ── Reading progress
+  const progressEl = document.getElementById('progress');
+  const navEl = document.getElementById('nav');
+
+  window.addEventListener('scroll', () => {
+    const st = window.scrollY;
+    const dh = document.documentElement.scrollHeight - window.innerHeight;
+    progressEl.style.width = ((st / dh) * 100) + '%';
+    navEl.classList.toggle('stuck', st > 50);
+  }, { passive: true });
+
+  // ── Scroll reveals
+  const rv = document.querySelectorAll('.rv');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
+  rv.forEach(el => io.observe(el));
+
+  // ── Count-up for stat values
+  function countUp(el) {
+    const target = parseFloat(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    const isFloat = target % 1 !== 0;
+    const duration = 1100;
+    const start = performance.now();
+
+    const tick = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = target * eased;
+      el.textContent = (isFloat ? val.toFixed(1) : Math.round(val)) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  const countIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.target.dataset.count) {
+        countUp(e.target);
+        countIO.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('[data-count]').forEach(el => countIO.observe(el));
+</script>
+
+</body>
+</html>

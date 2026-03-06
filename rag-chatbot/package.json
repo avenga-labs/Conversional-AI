@@ -1,0 +1,26 @@
+{
+  "name": "rag-chatbot-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "RAG Chatbot with Claude, Supabase & GitHub Pages",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "ingest": "node scripts/ingest.js",
+    "dev": "npx live-server . --port=5500 --no-browser",
+    "worker:dev": "cd chatbot-worker && wrangler dev",
+    "worker:deploy": "cd chatbot-worker && wrangler deploy"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "cli-progress": "^3.12.0",
+    "dotenv": "^16.4.5",
+    "openai": "^4.56.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
