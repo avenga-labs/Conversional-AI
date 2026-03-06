@@ -18,6 +18,8 @@ const MAX_HISTORY = 20; // Letzte N Nachrichten im Kontext
 let conversationHistory = [];
 let isLoading = false;
 let currentSessionId = null; // Eindeutige ID für aktuelle Chat-Session
+let currentUnicornScene = null;
+
 /* ══════════════════════════════════
    DOM References
 ══════════════════════════════════ */
@@ -38,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupGlobalErrorHandler();
     setupWelcomeSendButton();
     updateHeaderBadge();
+    loadUnicorn();
 });
 
 /* ══════════════════════════════════
@@ -72,6 +75,10 @@ async function sendMessage(message) {
     const inputArea = document.getElementById('input-area');
 
     if (welcomeScreen) {
+        if (typeof currentUnicornScene !== 'undefined' && currentUnicornScene) {
+            try { currentUnicornScene.destroy(); } catch (e) { }
+            currentUnicornScene = null;
+        }
         welcomeScreen.remove();
 
         // Chat Messages List Container erstellen
@@ -221,6 +228,7 @@ function startNewChat() {
 
     messagesEl.innerHTML = `
     <div class="welcome-screen">
+      <div id="unicorn-container" class="unicorn-bg"></div>
       <div class="welcome-headline">
         <div class="welcome-icon" aria-hidden="true">✦</div>
         <h2>Guten Tag, Jon Doe</h2>
@@ -255,6 +263,7 @@ function startNewChat() {
     // Re-attach event listener for welcome send button
     setupWelcomeSendButton();
     updateHeaderBadge();
+    loadUnicorn();
 }
 
 /* ══════════════════════════════════
@@ -362,6 +371,10 @@ function loadChatSession(sessionId) {
         conversationHistory = session.messages || [];
 
         // Chat-UI leeren und Messages rendern
+        if (typeof currentUnicornScene !== 'undefined' && currentUnicornScene) {
+            try { currentUnicornScene.destroy(); } catch (e) { }
+            currentUnicornScene = null;
+        }
         messagesEl.innerHTML = '';
 
         conversationHistory.forEach(msg => {
@@ -520,4 +533,28 @@ function escHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+async function loadUnicorn() {
+    if (currentUnicornScene) {
+        try {
+            currentUnicornScene.destroy();
+        } catch (e) { }
+        currentUnicornScene = null;
+    }
+    const container = document.getElementById('unicorn-container');
+    if (container && window.UnicornStudio) {
+        try {
+            currentUnicornScene = await window.UnicornStudio.addScene({
+                elementId: "unicorn-container",
+                projectId: "aSHA1Y5MKxoU0f3zE97E",
+                scale: 1,
+                dpi: 1.5,
+                fps: 60,
+                lazyLoad: true,
+            });
+        } catch (e) {
+            console.error("Unicorn Error:", e);
+        }
+    }
 }
