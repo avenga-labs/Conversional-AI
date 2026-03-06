@@ -27,8 +27,6 @@ const input = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
 const newChatBtn = document.getElementById('new-chat-btn');
 const clearBtn = document.getElementById('clear-btn');
-const sidebarToggle = document.getElementById('sidebar-toggle');
-const sidebar = document.getElementById('sidebar');
 const chatHistory = document.getElementById('chat-history');
 
 /* ══════════════════════════════════
@@ -62,7 +60,6 @@ input.addEventListener('keydown', (e) => {
 
 newChatBtn?.addEventListener('click', startNewChat);
 clearBtn?.addEventListener('click', startNewChat);
-sidebarToggle?.addEventListener('click', () => sidebar?.classList.toggle('open'));
 
 /* ══════════════════════════════════
    Core: Nachricht senden
@@ -301,6 +298,7 @@ function saveChatHistory() {
         const sessionData = {
             id: currentSessionId,
             title,
+            messages: conversationHistory, // Kompletten Chat speichern
             ts: Date.now()
         };
 
@@ -322,10 +320,51 @@ function loadChatHistory() {
     if (!chatHistory) return;
     try {
         const entries = JSON.parse(localStorage.getItem('chatSessions') || '[]');
-        chatHistory.innerHTML = entries.map(e =>
-            `<div class="history-item" title="${escHtml(e.title)}">💬 ${escHtml(e.title)}</div>`
-        ).join('') || '<div class="history-empty">Noch kein Verlauf</div>';
+
+        if (entries.length === 0) {
+            chatHistory.innerHTML = '<div class="history-empty">Noch keine Chats</div>';
+            return;
+        }
+
+        // Render komplette Chat-Messages in der Sidebar
+        chatHistory.innerHTML = entries.map(session => {
+            const messagesHtml = session.messages?.map(msg => {
+                const isUser = msg.role === 'user';
+                const content = typeof msg.content === 'string'
+                    ? msg.content.slice(0, 100)
+                    : 'Chat-Nachricht';
+
+                return `
+                    <div class="history-message ${isUser ? 'user' : 'assistant'}">
+                        <div class="message-role">${isUser ? 'Du' : 'AIvenga'}</div>
+                        <div class="message-preview">${escHtml(content)}${content.length > 100 ? '...' : ''}</div>
+                    </div>
+                `;
+            }).join('') || '';
+
+            return `
+                <div class="history-session" data-session-id="${session.id}">
+                    <div class="session-header">
+                        <div class="session-title">${escHtml(session.title)}</div>
+                        <div class="session-time">${formatTime(session.ts)}</div>
+                    </div>
+                    <div class="session-messages">${messagesHtml}</div>
+                </div>
+            `;
+        }).join('');
     } catch { /* ignore */ }
+}
+
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return 'Gerade eben';
+    if (diffMins < 60) return `vor ${diffMins}m`;
+    if (diffMins < 1440) return `vor ${Math.floor(diffMins / 60)}h`;
+    return date.toLocaleDateString('de-DE');
 }
 
 /* ══════════════════════════════════
