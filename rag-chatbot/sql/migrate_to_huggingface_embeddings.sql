@@ -1,28 +1,31 @@
 -- ═══════════════════════════════════════════════════
--- Supabase Setup: RAG Chatbot
--- Führe diese Datei in der Supabase SQL-Konsole aus.
+-- Migration: Zu Hugging Face Embeddings (kostenlos!)
+-- ═══════════════════════════════════════════════════
+-- Model: sentence-transformers/all-MiniLM-L6-v2
+-- Dimensionen: 384
 -- ═══════════════════════════════════════════════════
 
--- 1. pgvector Extension aktivieren
-CREATE EXTENSION IF NOT EXISTS vector;
+-- WARNUNG: Löscht alle bestehenden Embeddings!
+-- Du musst danach deine Dokumente neu ingestieren.
 
--- 2. Dokumente-Tabelle
--- HINWEIS: Supabase gte-small verwendet 384 Dimensionen (statt OpenAI's 1536)
-CREATE TABLE IF NOT EXISTS documents (
+-- 1. Tabelle löschen und neu erstellen
+DROP TABLE IF EXISTS documents CASCADE;
+
+CREATE TABLE documents (
   id         BIGSERIAL PRIMARY KEY,
   content    TEXT        NOT NULL,
   metadata   JSONB       DEFAULT '{}',
-  embedding  VECTOR(384) NOT NULL,
+  embedding  VECTOR(384) NOT NULL,  -- all-MiniLM-L6-v2
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 3. Index für schnelle Cosine-Similarity-Suche
-CREATE INDEX IF NOT EXISTS documents_embedding_idx
+-- 2. Index erstellen
+CREATE INDEX documents_embedding_idx
   ON documents
   USING ivfflat (embedding vector_cosine_ops)
   WITH (lists = 100);
 
--- 4. Similarity-Search-Funktion
+-- 3. Match-Funktion
 CREATE OR REPLACE FUNCTION match_documents(
   query_embedding  VECTOR(384),
   match_threshold  FLOAT   DEFAULT 0.65,
@@ -47,31 +50,12 @@ AS $$
   LIMIT match_count;
 $$;
 
--- 5. Row-Level-Security (optional, empfohlen)
+-- 4. Row-Level-Security
 ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
 
--- Service-Role hat vollen Zugriff (für den Worker)
 CREATE POLICY "service_role_all" ON documents
   USING (true)
   WITH CHECK (true);
 
--- Anonyme Nutzer dürfen die Funktion aufrufen (für den Worker via anon key)
-GRANT EXECUTE ON FUNCTION match_documents TO anon, authenticated;
-
--- 6. Embedding-Funktion (nutzt Supabase's integriertes gte-small Modell)
-CREATE OR REPLACE FUNCTION embed_text(input TEXT)
-RETURNS VECTOR(384)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  embedding_result VECTOR(384);
-BEGIN
-  SELECT vec INTO embedding_result
-  FROM ai.gte_small_embed(input);
-
-  RETURN embedding_result;
-END;
-$$;
-
--- Permissions für embed_text
-GRANT EXECUTE ON FUNCTION embed_text TO anon, authenticated, service_role;
+-- 5. Permissions
+GRANT EXECUTE ON FUNCTION match_documents TO anon, authenticated, service_role;

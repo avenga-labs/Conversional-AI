@@ -178,19 +178,4 @@ function escHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-/**
- * Parst die rohe Claude-Antwort zu einem Blocks-Array.
- * Fallback auf Plain-Text wenn JSON nicht parsebar.
- */
-function parseResponse(raw) {
-    try {
-        // Claude liefert manchmal JSON mit ```json ... ``` Wrapper → entfernen
-        const cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
-        const parsed = JSON.parse(cleaned);
-        if (Array.isArray(parsed.blocks)) return parsed.blocks;
-        if (Array.isArray(parsed)) return parsed;
-        return [{ type: 'text', content: raw }];
-    } catch {
-        return [{ type: 'text', content: raw }];
-    }
-}
+// parseResponse() wurde entfernt - das JSON-Parsing passiert bereits im Worker (index.js:186)

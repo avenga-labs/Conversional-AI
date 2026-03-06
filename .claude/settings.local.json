@@ -8,7 +8,8 @@
       "Bash(dir \"C:\\Users\\mieba\\Documents\\Avenga Experience\\Conversional AI\")",
       "Bash(git add rag-chatbot)",
       "Bash(git commit -m \"Add RAG Chatbot with Avenga Design\n\n- Custom Avenga brand design with Haffer & Reckless fonts\n- Cloudflare Worker backend with Claude AI\n- Supabase vector database integration\n- Production-ready deployment configuration\")",
-      "Bash(npx wrangler deploy)"
+      "Bash(npx wrangler deploy)",
+      "Bash(git push origin main)"
     ]
   }
 }

@@ -5,6 +5,7 @@
 // Secrets (wrangler secret put ...):
 //   ANTHROPIC_API_KEY
 //   SUPABASE_SERVICE_KEY
+//   HUGGINGFACE_API_KEY (optional aber empfohlen für bessere Rate Limits)
 //
 // Vars (wrangler.toml):
 //   SUPABASE_URL
@@ -113,17 +114,22 @@ export default {
                 return jsonError('Leere Nachricht.', 400, cors);
             }
 
-            /* ── 2. Embedding der User-Frage (via Supabase) ───────── */
+            /* ── 2. Embedding der User-Frage (via Hugging Face - kostenlos) ───────── */
+            const hfHeaders = {
+                'Content-Type': 'application/json',
+            };
+
+            // API Key hinzufügen falls vorhanden (empfohlen für bessere Rate Limits)
+            if (env.HUGGINGFACE_API_KEY) {
+                hfHeaders['Authorization'] = `Bearer ${env.HUGGINGFACE_API_KEY}`;
+            }
+
             const embRes = await fetchWithTimeout(
-                `${env.SUPABASE_URL}/rest/v1/rpc/embed_text`,
+                'https://router.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2',
                 {
                     method: 'POST',
-                    headers: {
-                        'apikey': env.SUPABASE_SERVICE_KEY,
-                        'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ input: message }),
+                    headers: hfHeaders,
+                    body: JSON.stringify({ inputs: message }),
                 }
             );
 
@@ -132,7 +138,8 @@ export default {
                 throw new Error(`Embedding API error: ${err}`);
             }
             const embData = await embRes.json();
-            const queryEmbedding = embData;
+            // Hugging Face gibt direkt einen Array zurück
+            const queryEmbedding = Array.isArray(embData) ? embData : embData[0];
 
             /* ── 3. Supabase: Ähnliche Dokumente finden ────────── */
             const matchRes = await fetchWithTimeout(

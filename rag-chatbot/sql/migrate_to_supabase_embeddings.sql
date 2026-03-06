@@ -1,28 +1,31 @@
 -- ═══════════════════════════════════════════════════
--- Supabase Setup: RAG Chatbot
--- Führe diese Datei in der Supabase SQL-Konsole aus.
+-- Migration: Von OpenAI zu Supabase Embeddings
+-- ═══════════════════════════════════════════════════
+-- Führe diese Datei aus, wenn du bereits eine Datenbank
+-- mit 1536-dimensionalen Vektoren (OpenAI) hast.
 -- ═══════════════════════════════════════════════════
 
--- 1. pgvector Extension aktivieren
-CREATE EXTENSION IF NOT EXISTS vector;
+-- WARNUNG: Löscht alle bestehenden Embeddings!
+-- Du musst danach deine Dokumente neu ingestieren.
 
--- 2. Dokumente-Tabelle
--- HINWEIS: Supabase gte-small verwendet 384 Dimensionen (statt OpenAI's 1536)
-CREATE TABLE IF NOT EXISTS documents (
+-- 1. Tabelle löschen und neu erstellen mit korrekter Dimension
+DROP TABLE IF EXISTS documents CASCADE;
+
+CREATE TABLE documents (
   id         BIGSERIAL PRIMARY KEY,
   content    TEXT        NOT NULL,
   metadata   JSONB       DEFAULT '{}',
-  embedding  VECTOR(384) NOT NULL,
+  embedding  VECTOR(384) NOT NULL,  -- Supabase gte-small
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 3. Index für schnelle Cosine-Similarity-Suche
-CREATE INDEX IF NOT EXISTS documents_embedding_idx
+-- 2. Index erstellen
+CREATE INDEX documents_embedding_idx
   ON documents
   USING ivfflat (embedding vector_cosine_ops)
   WITH (lists = 100);
 
--- 4. Similarity-Search-Funktion
+-- 3. Match-Funktion updaten
 CREATE OR REPLACE FUNCTION match_documents(
   query_embedding  VECTOR(384),
   match_threshold  FLOAT   DEFAULT 0.65,
@@ -47,18 +50,7 @@ AS $$
   LIMIT match_count;
 $$;
 
--- 5. Row-Level-Security (optional, empfohlen)
-ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
-
--- Service-Role hat vollen Zugriff (für den Worker)
-CREATE POLICY "service_role_all" ON documents
-  USING (true)
-  WITH CHECK (true);
-
--- Anonyme Nutzer dürfen die Funktion aufrufen (für den Worker via anon key)
-GRANT EXECUTE ON FUNCTION match_documents TO anon, authenticated;
-
--- 6. Embedding-Funktion (nutzt Supabase's integriertes gte-small Modell)
+-- 4. Embedding-Funktion erstellen
 CREATE OR REPLACE FUNCTION embed_text(input TEXT)
 RETURNS VECTOR(384)
 LANGUAGE plpgsql
@@ -73,5 +65,13 @@ BEGIN
 END;
 $$;
 
--- Permissions für embed_text
+-- 5. Row-Level-Security
+ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "service_role_all" ON documents
+  USING (true)
+  WITH CHECK (true);
+
+-- 6. Permissions
+GRANT EXECUTE ON FUNCTION match_documents TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION embed_text TO anon, authenticated, service_role;

@@ -17,6 +17,7 @@ const MAX_HISTORY = 20; // Letzte N Nachrichten im Kontext
 ══════════════════════════════════ */
 let conversationHistory = [];
 let isLoading = false;
+let currentSessionId = null; // Eindeutige ID für aktuelle Chat-Session
 
 /* ══════════════════════════════════
    DOM References
@@ -214,6 +215,7 @@ function setLoading(state) {
 
 function startNewChat() {
     conversationHistory = [];
+    currentSessionId = Date.now(); // Neue Session-ID generieren
 
     // Input-Area verstecken
     const inputArea = document.getElementById('input-area');
@@ -282,10 +284,36 @@ function setupTextareaAutoResize() {
 ══════════════════════════════════ */
 function saveChatHistory() {
     try {
-        const snippet = conversationHistory.slice(-2);
-        const title = snippet[0]?.content?.slice(0, 40) || 'Chat';
+        // Keine Session-ID? Neue erstellen
+        if (!currentSessionId) {
+            currentSessionId = Date.now();
+        }
+
+        // Titel aus erster User-Nachricht generieren
+        const userMessages = conversationHistory.filter(msg => msg.role === 'user');
+        const title = userMessages[0]?.content?.slice(0, 40) || 'Neuer Chat';
+
+        // Bestehende Sessions laden
         const entries = JSON.parse(localStorage.getItem('chatSessions') || '[]');
-        entries.unshift({ id: Date.now(), title, ts: Date.now() });
+
+        // Prüfen ob Session bereits existiert (Update) oder neu ist (Insert)
+        const existingIndex = entries.findIndex(e => e.id === currentSessionId);
+
+        const sessionData = {
+            id: currentSessionId,
+            title,
+            ts: Date.now()
+        };
+
+        if (existingIndex >= 0) {
+            // Existierende Session updaten
+            entries[existingIndex] = sessionData;
+        } else {
+            // Neue Session hinzufügen
+            entries.unshift(sessionData);
+        }
+
+        // Nur die letzten 20 behalten
         localStorage.setItem('chatSessions', JSON.stringify(entries.slice(0, 20)));
         loadChatHistory();
     } catch { /* ignore */ }

@@ -5,7 +5,8 @@
 #   1. wrangler login
 #   2. wrangler secret put ANTHROPIC_API_KEY
 #   3. wrangler secret put SUPABASE_SERVICE_KEY
-#   4. wrangler deploy
+#   4. wrangler secret put HUGGINGFACE_API_KEY (optional)
+#   5. wrangler deploy
 # ═══════════════════════════════════════════════════════
 
 name = "chatbot-worker"
@@ -20,6 +21,7 @@ SUPABASE_URL = "https://msqlexexbnqctmdxjqhq.supabase.co"
 # Secrets werden NICHT hier gespeichert – nutze:
 #   wrangler secret put ANTHROPIC_API_KEY
 #   wrangler secret put SUPABASE_SERVICE_KEY
+#   wrangler secret put HUGGINGFACE_API_KEY (optional für bessere Rate Limits)
 
 # Optional: Custom Domain
 # routes = [
