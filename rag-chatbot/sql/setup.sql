@@ -7,12 +7,12 @@
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- 2. Dokumente-Tabelle
--- HINWEIS: Supabase gte-small verwendet 384 Dimensionen (statt OpenAI's 1536)
+-- HINWEIS: Nutzt OpenAI text-embedding-3-small mit 1536 Dimensionen
 CREATE TABLE IF NOT EXISTS documents (
   id         BIGSERIAL PRIMARY KEY,
   content    TEXT        NOT NULL,
   metadata   JSONB       DEFAULT '{}',
-  embedding  VECTOR(384) NOT NULL,
+  embedding  VECTOR(1536) NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -24,7 +24,7 @@ CREATE INDEX IF NOT EXISTS documents_embedding_idx
 
 -- 4. Similarity-Search-Funktion
 CREATE OR REPLACE FUNCTION match_documents(
-  query_embedding  VECTOR(384),
+  query_embedding  VECTOR(1536),
   match_threshold  FLOAT   DEFAULT 0.65,
   match_count      INT     DEFAULT 6
 )
@@ -58,20 +58,4 @@ CREATE POLICY "service_role_all" ON documents
 -- Anonyme Nutzer dürfen die Funktion aufrufen (für den Worker via anon key)
 GRANT EXECUTE ON FUNCTION match_documents TO anon, authenticated;
 
--- 6. Embedding-Funktion (nutzt Supabase's integriertes gte-small Modell)
-CREATE OR REPLACE FUNCTION embed_text(input TEXT)
-RETURNS VECTOR(384)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  embedding_result VECTOR(384);
-BEGIN
-  SELECT vec INTO embedding_result
-  FROM ai.gte_small_embed(input);
 
-  RETURN embedding_result;
-END;
-$$;
-
--- Permissions für embed_text
-GRANT EXECUTE ON FUNCTION embed_text TO anon, authenticated, service_role;

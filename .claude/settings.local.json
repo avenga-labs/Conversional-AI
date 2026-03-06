@@ -9,7 +9,9 @@
       "Bash(git add rag-chatbot)",
       "Bash(git commit -m \"Add RAG Chatbot with Avenga Design\n\n- Custom Avenga brand design with Haffer & Reckless fonts\n- Cloudflare Worker backend with Claude AI\n- Supabase vector database integration\n- Production-ready deployment configuration\")",
       "Bash(npx wrangler deploy)",
-      "Bash(git push origin main)"
+      "Bash(git push origin main)",
+      "Bash(git add .)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nDisable RAG - Simplify to Claude-only Chatbot\n\nProblem: Embedding APIs (HuggingFace, Supabase AI) unstable/deprecated\nSolution: Disable RAG completely, direct Claude integration\n\nChanges:\n- Remove all embedding logic (HuggingFace, OpenAI, Supabase)\n- Chatbot now works directly with Claude Sonnet 4\n- Simplified system prompt (no context injection)\n- Clean, stable, production-ready\n\nRAG can be re-enabled later with stable solution (e.g. OpenAI embeddings)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ]
   }
 }

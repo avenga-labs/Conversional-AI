@@ -1,19 +1,15 @@
 // src/index.js – Cloudflare Worker
 // ─────────────────────────────────────────────────────────────────
-// RAG-Proxy: Embedding → Supabase Vektor-Suche → Claude → JSON-Response
+// CHATBOT: Claude AI → JSON-Response
+//
+// RAG (Dokument-Suche) ist DEAKTIVIERT - kann später aktiviert werden
 //
 // Secrets (wrangler secret put ...):
 //   ANTHROPIC_API_KEY
-//   SUPABASE_SERVICE_KEY
-//   HUGGINGFACE_API_KEY (optional aber empfohlen für bessere Rate Limits)
-//
-// Vars (wrangler.toml):
-//   SUPABASE_URL
 // ─────────────────────────────────────────────────────────────────
 
 /* ── System Prompt mit Component Schema ──────────────────── */
-const SYSTEM_PROMPT = `Du bist ein intelligenter Assistent. Beantworte Fragen ausschließlich auf Basis des bereitgestellten KONTEXTS.
-Wenn der Kontext keine passenden Informationen enthält, sage das ehrlich.
+const SYSTEM_PROMPT = `Du bist ein intelligenter Assistent für Avenga.
 Antworte IMMER in validem JSON im folgenden Format:
 
 { "blocks": [ ... ] }
@@ -114,56 +110,11 @@ export default {
                 return jsonError('Leere Nachricht.', 400, cors);
             }
 
-            /* ── 2. Embedding der User-Frage (via Hugging Face - kostenlos) ───────── */
-            const hfHeaders = {
-                'Content-Type': 'application/json',
-            };
+            /* ── 2. RAG DEAKTIVIERT - Kein Embedding, keine Dokument-Suche ─────────── */
+            // Um RAG zu aktivieren: Stabile Embedding-Lösung implementieren
+            const sources = [];
 
-            // API Key hinzufügen falls vorhanden (empfohlen für bessere Rate Limits)
-            if (env.HUGGINGFACE_API_KEY) {
-                hfHeaders['Authorization'] = `Bearer ${env.HUGGINGFACE_API_KEY}`;
-            }
-
-            const embRes = await fetchWithTimeout(
-                'https://router.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2',
-                {
-                    method: 'POST',
-                    headers: hfHeaders,
-                    body: JSON.stringify({ inputs: message }),
-                }
-            );
-
-            if (!embRes.ok) {
-                const err = await embRes.text();
-                throw new Error(`Embedding API error: ${err}`);
-            }
-            const embData = await embRes.json();
-            // Hugging Face gibt direkt einen Array zurück
-            const queryEmbedding = Array.isArray(embData) ? embData : embData[0];
-
-            /* ── 3. Supabase: Ähnliche Dokumente finden ────────── */
-            const matchRes = await fetchWithTimeout(
-                `${env.SUPABASE_URL}/rest/v1/rpc/match_documents`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'apikey': env.SUPABASE_SERVICE_KEY,
-                        'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        query_embedding: queryEmbedding,
-                        match_threshold: 0.65,
-                        match_count: 6,
-                    }),
-                }
-            );
-
-            const docs = matchRes.ok ? await matchRes.json() : [];
-            const context = docs.map(d => d.content).join('\n\n---\n\n');
-            const sources = docs.map(d => d.metadata);
-
-            /* ── 4. Claude aufrufen ─────────────────────────────── */
+            /* ── 3. Claude aufrufen ─────────────────────────────── */
             const claudeRes = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
                 method: 'POST',
                 headers: {
@@ -172,9 +123,9 @@ export default {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    model: 'claude-sonnet-4-20250514',  // Kosteneffizient: ~$3/M Tokens (vs. Opus ~$15/M)
+                    model: 'claude-sonnet-4-20250514',  // Neuestes Sonnet
                     max_tokens: 2048,
-                    system: `${SYSTEM_PROMPT}\n\n${context ? `KONTEXT:\n${context}` : 'Kein spezifischer Kontext gefunden.'}`,
+                    system: SYSTEM_PROMPT,
                     messages: [
                         ...history.slice(-14), // Letzte 7 Runden
                         { role: 'user', content: message },
@@ -189,7 +140,7 @@ export default {
             const claudeData = await claudeRes.json();
             const rawReply = claudeData.content?.[0]?.text ?? '';
 
-            /* ── 5. JSON parsen (mit Fallback) ──────────────────── */
+            /* ── 4. JSON parsen (mit Fallback) ──────────────────── */
             let blocks;
             try {
                 const cleaned = rawReply.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
@@ -199,7 +150,7 @@ export default {
                 blocks = [{ type: 'text', content: rawReply }];
             }
 
-            /* ── 6. Response ────────────────────────────────────── */
+            /* ── 5. Response ────────────────────────────────────── */
             return new Response(
                 JSON.stringify({ blocks, sources }),
                 { headers: { ...cors, 'Content-Type': 'application/json' } }

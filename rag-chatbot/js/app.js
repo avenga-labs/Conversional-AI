@@ -18,7 +18,6 @@ const MAX_HISTORY = 20; // Letzte N Nachrichten im Kontext
 let conversationHistory = [];
 let isLoading = false;
 let currentSessionId = null; // Eindeutige ID für aktuelle Chat-Session
-
 /* ══════════════════════════════════
    DOM References
 ══════════════════════════════════ */
@@ -215,7 +214,7 @@ function setLoading(state) {
 
 function startNewChat() {
     conversationHistory = [];
-    currentSessionId = Date.now(); // Neue Session-ID generieren
+    currentSessionId = null; // Neue Session-ID generieren
 
     // Input-Area verstecken
     const inputArea = document.getElementById('input-area');

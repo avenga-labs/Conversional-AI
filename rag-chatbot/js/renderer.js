@@ -8,46 +8,46 @@
 
 /* ── Markdown-Konfiguration ── */
 if (typeof marked !== 'undefined') {
-    marked.setOptions({ breaks: true, gfm: true });
+  marked.use({ breaks: true, gfm: true });
 }
 function md(text) {
-    return typeof marked !== 'undefined' ? marked.parse(text || '') : (text || '');
+  return typeof marked !== 'undefined' ? marked.parse(text || '') : (text || '');
 }
 
 /* ── Haupt-Renderer ──────────────────────────────────────── */
 function renderBlocks(blocks) {
-    if (!Array.isArray(blocks) || blocks.length === 0) return '';
-    return blocks.map(renderBlock).join('');
+  if (!Array.isArray(blocks) || blocks.length === 0) return '';
+  return blocks.map(renderBlock).join('');
 }
 
 function renderBlock(block) {
-    try {
-        switch (block.type) {
-            case 'text': return renderText(block);
-            case 'card': return renderCard(block);
-            case 'image_gallery': return renderImageGallery(block);
-            case 'table': return renderTable(block);
-            case 'multi_select': return renderMultiSelect(block);
-            case 'toggle': return renderToggle(block);
-            case 'button_group': return renderButtonGroup(block);
-            case 'info_box': return renderInfoBox(block);
-            default:
-                return `<div class="block-text"><p><em>[Unbekannter Block-Typ: ${escHtml(block.type)}]</em></p></div>`;
-        }
-    } catch (e) {
-        console.error('renderBlock error:', e, block);
-        return '';
+  try {
+    switch (block.type) {
+      case 'text': return renderText(block);
+      case 'card': return renderCard(block);
+      case 'image_gallery': return renderImageGallery(block);
+      case 'table': return renderTable(block);
+      case 'multi_select': return renderMultiSelect(block);
+      case 'toggle': return renderToggle(block);
+      case 'button_group': return renderButtonGroup(block);
+      case 'info_box': return renderInfoBox(block);
+      default:
+        return `<div class="block-text"><p><em>[Unbekannter Block-Typ: ${escHtml(block.type)}]</em></p></div>`;
     }
+  } catch (e) {
+    console.error('renderBlock error:', e, block);
+    return '';
+  }
 }
 
 /* ── Einzelne Block-Renderer ─────────────────────────────── */
 
 function renderText({ content }) {
-    return `<div class="block block-text">${md(content)}</div>`;
+  return `<div class="block block-text">${md(content)}</div>`;
 }
 
 function renderCard({ title, description, image, link }) {
-    return `
+  return `
     <div class="block block-card">
       ${image ? `<div class="card-img-wrap"><img src="${escHtml(image)}" alt="${escHtml(title)}" loading="lazy"></div>` : ''}
       <div class="card-body">
@@ -59,22 +59,22 @@ function renderCard({ title, description, image, link }) {
 }
 
 function renderImageGallery({ images }) {
-    if (!images?.length) return '';
-    const items = images.map(img =>
-        `<div class="gallery-item">
+  if (!images?.length) return '';
+  const items = images.map(img =>
+    `<div class="gallery-item">
        <img src="${escHtml(img.src)}" alt="${escHtml(img.alt)}" loading="lazy">
        ${img.alt ? `<p class="gallery-caption">${escHtml(img.alt)}</p>` : ''}
      </div>`
-    ).join('');
-    return `<div class="block block-gallery">${items}</div>`;
+  ).join('');
+  return `<div class="block block-gallery">${items}</div>`;
 }
 
 function renderTable({ headers, rows }) {
-    const head = headers?.map(h => `<th>${escHtml(h)}</th>`).join('') ?? '';
-    const body = rows?.map(row =>
-        `<tr>${row.map(cell => `<td>${escHtml(String(cell))}</td>`).join('')}</tr>`
-    ).join('') ?? '';
-    return `
+  const head = headers?.map(h => `<th>${escHtml(h)}</th>`).join('') ?? '';
+  const body = rows?.map(row =>
+    `<tr>${row.map(cell => `<td>${escHtml(String(cell))}</td>`).join('')}</tr>`
+  ).join('') ?? '';
+  return `
     <div class="block block-table-wrap">
       <table class="block-table">
         ${head ? `<thead><tr>${head}</tr></thead>` : ''}
@@ -84,14 +84,14 @@ function renderTable({ headers, rows }) {
 }
 
 function renderMultiSelect({ label, options }) {
-    const opts = options?.map(o =>
-        `<label class="select-option">
+  const opts = options?.map(o =>
+    `<label class="select-option">
        <input type="checkbox" value="${escHtml(o.id)}" class="select-cb">
        <span class="cb-custom"></span>
        <span class="cb-label">${escHtml(o.text)}</span>
      </label>`
-    ).join('') ?? '';
-    return `
+  ).join('') ?? '';
+  return `
     <div class="block block-multi-select">
       ${label ? `<p class="select-label">${escHtml(label)}</p>` : ''}
       <div class="select-options">${opts}</div>
@@ -100,7 +100,7 @@ function renderMultiSelect({ label, options }) {
 }
 
 function renderToggle({ label, content }) {
-    return `
+  return `
     <details class="block block-toggle">
       <summary class="toggle-summary">
         <span>${escHtml(label)}</span>
@@ -113,22 +113,22 @@ function renderToggle({ label, content }) {
 }
 
 function renderButtonGroup({ buttons }) {
-    const btns = buttons?.map(b =>
-        `<button
+  const btns = buttons?.map(b =>
+    `<button
        class="action-btn"
        data-action="${escHtml(b.action)}"
        data-value="${escHtml(b.value)}"
        onclick="handleAction('${escHtml(b.action)}','${escHtml(b.value)}')">
        ${escHtml(b.label)}
      </button>`
-    ).join('') ?? '';
-    return `<div class="block block-buttons">${btns}</div>`;
+  ).join('') ?? '';
+  return `<div class="block block-buttons">${btns}</div>`;
 }
 
 function renderInfoBox({ variant, title, content }) {
-    const icons = { info: 'ℹ️', warning: '⚠️', success: '✅' };
-    const icon = icons[variant] ?? 'ℹ️';
-    return `
+  const icons = { info: 'ℹ️', warning: '⚠️', success: '✅' };
+  const icon = icons[variant] ?? 'ℹ️';
+  return `
     <div class="block block-info-box ${escHtml(variant || 'info')}">
       <div class="info-header">
         <span class="info-icon">${icon}</span>
@@ -145,37 +145,37 @@ function renderInfoBox({ variant, title, content }) {
  * Schickt die Aktion als neue User-Nachricht.
  */
 function handleAction(action, value) {
-    const input = document.getElementById('chat-input');
-    if (!input) return;
-    input.value = value;
-    document.getElementById('chat-form')?.dispatchEvent(new Event('submit', { bubbles: true }));
+  const input = document.getElementById('chat-input');
+  if (!input) return;
+  input.value = value;
+  document.getElementById('chat-form')?.dispatchEvent(new Event('submit', { bubbles: true }));
 }
 
 /**
  * Wird vom Multi-Select "Bestätigen"-Button aufgerufen.
  */
 function submitSelection(btn) {
-    const container = btn.closest('.block-multi-select');
-    if (!container) return;
-    const selected = [...container.querySelectorAll('.select-cb:checked')]
-        .map(cb => cb.value);
-    if (selected.length === 0) return;
+  const container = btn.closest('.block-multi-select');
+  if (!container) return;
+  const selected = [...container.querySelectorAll('.select-cb:checked')]
+    .map(cb => cb.value);
+  if (selected.length === 0) return;
 
-    const input = document.getElementById('chat-input');
-    if (!input) return;
-    input.value = `Meine Auswahl: ${selected.join(', ')}`;
-    document.getElementById('chat-form')?.dispatchEvent(new Event('submit', { bubbles: true }));
+  const input = document.getElementById('chat-input');
+  if (!input) return;
+  input.value = `Meine Auswahl: ${selected.join(', ')}`;
+  document.getElementById('chat-form')?.dispatchEvent(new Event('submit', { bubbles: true }));
 }
 
 /* ── Hilfsfunktionen ─────────────────────────────────────── */
 
 function escHtml(str) {
-    return String(str ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 // parseResponse() wurde entfernt - das JSON-Parsing passiert bereits im Worker (index.js:186)
